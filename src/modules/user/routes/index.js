@@ -14,7 +14,7 @@ export const Routes = [
     path: "/brands/list",
     component: lazy(() => import("../views/brands")),
     meta: {
-      autoRoute: true
+      publicRoute:true
     }
   },
   {
