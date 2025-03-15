@@ -2,8 +2,8 @@ import React, { Fragment, Component, memo } from 'react'
 import { connect } from 'react-redux'
 import '../../app.css'
 import {CheckboxBasic, UnCheckboxBasic} from '../forms/CheckboxBasic'
-import { FileText, MoreVertical, Send, Plus, Eye, Key, User, Trash, List } from 'react-feather'// Import List icon
-import _ from 'lodash'
+import {FileText, MoreVertical, Send, Plus, Key, User, Eye, Trash} from 'react-feather'
+
 import {
     Row,
     Col,
@@ -47,13 +47,10 @@ const RowDetailsListView = ({ rowData, onClose }) => {
             <h3>View Details</h3>
             <ul>
                 <li>
+                    <strong>Brand:</strong> {rowData.brands?.name}
+                </li>
+                <li>
                     <strong>Name:</strong> {rowData.name}
-                </li>
-                <li>
-                    <strong>Country:</strong> {rowData.brandsCountry?.name}
-                </li>
-                <li>
-                    <strong>Logo:</strong> {rowData.logo && <img src={rowData.logo} alt="Logo" width="50" />}
                 </li>
                 <li>
                     <strong>Order:</strong> {rowData.order}
@@ -67,18 +64,19 @@ const RowDetailsListView = ({ rowData, onClose }) => {
         </div>
     )
 }
-const tableColumns = (state, view, _editBasicInfoModal, edit, hasAction, handleViewDetails) => [
-    // {
-    //     name: 'Details',
-    //     cell: (row) => (
-    //         <button onClick={() => handleViewDetails(row)}>
-    //             <List size={15} /> View Details
-    //         </button>
-    //     ),
-    //     grow: 1
-    // },
+const tableColumns = (state, view, edit, hasAction, handleViewDetails) => [
     {
-        name: 'Brand Name',
+        name: 'Brand',
+        selector: 'brands.name',
+        sortable: true,
+        grow: 1,
+        // minWidth: '225px',
+        filter: {
+            enabled: true
+        }
+    },
+    {
+        name: 'Name',
         selector: 'name',
         sortable: true,
         grow: 1,
@@ -86,46 +84,6 @@ const tableColumns = (state, view, _editBasicInfoModal, edit, hasAction, handleV
         filter: {
             enabled: true
         }
-    },
-    {
-        name: 'Country',
-        selector: 'brandsCountry.name',
-        sortable: true,
-        grow: 1,
-        // minWidth: '225px',
-        filter: {
-            enabled: true
-        }
-    },
-    {
-        name: 'Logo',
-        selector: 'logo',
-        // cell: row => {
-        //     return (
-        //         <>
-        //             <img width={50} height={50} src={_.get(row, 'logo')} alt="Example Image"/>
-        //         </>
-        //     )
-        // }
-        cell: row => {
-            const image = row.logo
-            return (
-                <>
-                    {image && (
-                        <a className={'rounded-circle overflow-hidden'} href={image} target="_blank">
-                            <img width={50} height={50} src={image} alt="Example Image"/>
-                        </a>
-                    )}
-                </>
-            )
-        },
-        sortable: true,
-        grow: 1,
-        // minWidth: '225px',
-        filter: {
-            enabled: true
-        }
-
     },
     {
         name: 'Order',
@@ -140,7 +98,7 @@ const tableColumns = (state, view, _editBasicInfoModal, edit, hasAction, handleV
     },
     {
         name: 'Is Active',
-        selector: 'brandsCountry.isActive',
+        selector: 'isActive',
         sortable: true,
         grow: 1,
         // // minWidth: '225px',
@@ -166,15 +124,12 @@ const tableColumns = (state, view, _editBasicInfoModal, edit, hasAction, handleV
                 <div className='d-flex'>
                     <UncontrolledDropdown>
                         <ActionDropdownToggle />
-                        <DropdownMenu right>
+                        <DropdownMenu >
                                 <DropdownItem  className='w-100'   onClick={() => handleViewDetails(row)}>
                                     <Eye size={15} />
                                     <span className='align-middle ml-50'>{trans('gen.actions.view')}</span>
                                 </DropdownItem>
-                                <DropdownItem className='ThreePoints' onClick={e => {
-                                    _editBasicInfoModal(row)
-                                }}
-                                >
+                                <DropdownItem className='ThreePoints' onClick={e => _editBasicInfoModal(row)} disabled={row.id === 1 && state.userId !== 1}>
                                     <FileText size={15} color={'blue'} />
                                     <span className='edit_className'>edit</span>
                                 </DropdownItem>
@@ -192,7 +147,7 @@ const tableColumns = (state, view, _editBasicInfoModal, edit, hasAction, handleV
 ]
 const tableActions = ['NoPermissionCode']
 //************************************//
-class BrandList extends Component {
+class CarModelList extends Component {
     static contextType = AbilityContext
     constructor(props) {
         super(props)
@@ -204,7 +159,6 @@ class BrandList extends Component {
     }
     //************************************//
     closeBasicInfoModal = () => {
-        console.log("Closing basic info modal")
         this.setState({basicInfoModal: {basicInfoModalShow: false, basicInfoModalData: {}}})
     }
     //************************************//
@@ -222,14 +176,6 @@ class BrandList extends Component {
     //************************************//
     openDetailsModal = (categoryId) => {
         this.setState({detailsModal: {detailsModalShow: false, detailsModalData: {categoryId}}})
-    }
-    //************************************//
-    handleViewDetails = (row) => { // Create handleViewDetails function
-        this.setState({ selectedRowData: row })
-    }
-    //************************************//
-    handleCloseDetails = () => { // Create handleCloseDetails function
-        this.setState({ selectedRowData: null })
     }
     //************************************//
     _editBasicInfoModal = (data) => {
@@ -250,16 +196,13 @@ class BrandList extends Component {
         })
     }
     //************************************//
-
     render () {
         const {  basicInfoModal, selectedRowData } = this.state
-        console.log("Render: basicInfoModalShow:", basicInfoModal.basicInfoModalShow)
-
-        const { detailsModalShow, detailsModalData } = this.state.detailsModal
+        const {detailsModalShow, detailsModalData} = this.state.detailsModal
         const hasAction = _hasAnyAbility(this.context, tableActions)
         return (
             <Fragment>
-                <Breadcrumbs breadCrumbMainTitle={''} breadCrumbTitle={<h1 className={'Brands'}> Brands </h1>} breadCrumbParent='' breadCrumbActive='' >
+                <Breadcrumbs breadCrumbMainTitle={''} breadCrumbTitle={<h1 className={'Brands'}> Car Models </h1>} breadCrumbParent='' breadCrumbActive='' >
                     <Button.Ripple className='btn-icon' color='primary' onClick={this.openBasicInfoModal}>
                         <Plus size={14} />
                         <span className='ml-25'>{trans('gen.actions.add')}</span>
@@ -268,20 +211,14 @@ class BrandList extends Component {
                 <Row>
                     <Col sm='12'>
                         <DataTable
-                            ref={(ref) => { this.dataTableRef = ref }} // Corrected line
-                            _fetchData={(params, callback) => _getDatatable('Brands/Brands_Read', {...params, filter: {...params.filter}}, callback)}
-                            columns={tableColumns(this.state, this.openDetailsModal, this._editBasicInfoModal, this.editBasicInfoModal, hasAction, this.handleViewDetails)}
+                            //ref={(ref) => { this.dataTableRef = ref }}
+                            _fetchData={(params, callback) => _getDatatable('CarModels/CarModels_Read', {...params, filter: {...params.filter}}, callback)}
+                            columns={tableColumns(this.state, this.openDetailsModal, this.editBasicInfoModal, hasAction)}
                             hasIndexing={false}
                             hasFilter={false}
                         />
                     </Col>
                 </Row>
-                {selectedRowData && (
-                    <RowDetailsListView rowData={selectedRowData} onClose={this.handleCloseDetails} />
-                )}
-                {/*{basicInfoModalShow && (*/}
-                {/*    <BasicInfoModal successCallback={this.dataTableRef._refresh} data={basicInfoModalData} onClose={this.closeBasicInfoModal} />*/}
-                {/*)}*/}
                 {basicInfoModal.basicInfoModalShow && (
                     <BasicInfoModal
                         isOpen={basicInfoModal.basicInfoModalShow}
@@ -299,4 +236,4 @@ const mapStateToProps = store => ({
     loading: store.app.loading
     //userId: _.get(store, `${env('REACT_APP_AUTH_MODULE')}.userData.id`)
 })
-export default connect(mapStateToProps, null, null, { forwardRef: true })(BrandList)
+export default connect(mapStateToProps, null, null, { forwardRef: true })(CarModelList)

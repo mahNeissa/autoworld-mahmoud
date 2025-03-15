@@ -6,7 +6,7 @@ export const Routes = [
     component: lazy(() => import("../views/auth/Login")),
     layout: "BlankLayout",
     meta: {
-      authRoute: true
+      publicRoute:true
     }
   },
 
@@ -18,29 +18,62 @@ export const Routes = [
     }
   },
   {
+    path: "/products/index",
+    component: lazy(() => import("../views/products")),
+    meta: {
+      publicRoute:true
+    }
+  },
+  {
     path: "/homepage",
     component: lazy(() => import("../views/homePage")),
     meta: {
-      general: true
+      publicRoute:true
     }
   },
   {
     path: "/indexes/countries/index",
     component: lazy(() => import("../views/indexes/countries")),
     meta: {
-      general: true
+      publicRoute: true
     }
   }, {
     path: "/indexes/cities/index",
     component: lazy(() => import("../views/indexes/cities")),
     meta: {
-      general: true
+      publicRoute: true
     }
   }, {
     path: "/indexes/brandsCountries/index",
     component: lazy(() => import("../views/indexes/brandsCountries")),
     meta: {
-      general: true
+      publicRoute: true
+    }
+  }, {
+    path: "/carModels/index",
+    component: lazy(() => import("../views/carModels")),
+    meta: {
+      publicRoute:true
+    }
+  }, {
+    path: "/order/index",
+    component: lazy(() => import("../views/order")),
+    meta: {
+      publicRoute:true
+    }
+  },
+  {
+    path: "/supplier/index",
+    component: lazy(() => import("../views/suppliers")),
+    meta: {
+      publicRoute:true
+    }
+  },
+  {
+    path: "/carSell/index",
+    component: lazy(() => import("../views/carSell")),
+    meta: {
+      publicRoute:true
     }
   },
   {

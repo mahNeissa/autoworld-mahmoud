@@ -47,16 +47,13 @@ const RowDetailsListView = ({ rowData, onClose }) => {
             <h3>View Details</h3>
             <ul>
                 <li>
-                    <strong>Name:</strong> {rowData.name}
+                    <strong>Category:</strong> {rowData.products?.productCategory?.name}
                 </li>
                 <li>
-                    <strong>Country:</strong> {rowData.brandsCountry?.name}
+                    <strong>Name:</strong> {rowData.products?.name}
                 </li>
                 <li>
-                    <strong>Logo:</strong> {rowData.logo && <img src={rowData.logo} alt="Logo" width="50" />}
-                </li>
-                <li>
-                    <strong>Order:</strong> {rowData.order}
+                    <strong>ARName:</strong> {rowData.products?.arName}
                 </li>
                 <li>
                     <strong>Is Active:</strong> {rowData.brandsCountry?.isActive ? 'Yes' : 'No'}
@@ -68,18 +65,9 @@ const RowDetailsListView = ({ rowData, onClose }) => {
     )
 }
 const tableColumns = (state, view, _editBasicInfoModal, edit, hasAction, handleViewDetails) => [
-    // {
-    //     name: 'Details',
-    //     cell: (row) => (
-    //         <button onClick={() => handleViewDetails(row)}>
-    //             <List size={15} /> View Details
-    //         </button>
-    //     ),
-    //     grow: 1
-    // },
-    {
-        name: 'Brand Name',
-        selector: 'name',
+     {
+        name: 'Category',
+        selector: 'products.productCategory.name',
         sortable: true,
         grow: 1,
         // minWidth: '225px',
@@ -88,8 +76,8 @@ const tableColumns = (state, view, _editBasicInfoModal, edit, hasAction, handleV
         }
     },
     {
-        name: 'Country',
-        selector: 'brandsCountry.name',
+        name: 'Name',
+        selector: 'products.name',
         sortable: true,
         grow: 1,
         // minWidth: '225px',
@@ -98,45 +86,14 @@ const tableColumns = (state, view, _editBasicInfoModal, edit, hasAction, handleV
         }
     },
     {
-        name: 'Logo',
-        selector: 'logo',
-        // cell: row => {
-        //     return (
-        //         <>
-        //             <img width={50} height={50} src={_.get(row, 'logo')} alt="Example Image"/>
-        //         </>
-        //     )
-        // }
-        cell: row => {
-            const image = row.logo
-            return (
-                <>
-                    {image && (
-                        <a className={'rounded-circle overflow-hidden'} href={image} target="_blank">
-                            <img width={50} height={50} src={image} alt="Example Image"/>
-                        </a>
-                    )}
-                </>
-            )
-        },
+        name: 'ARName',
+        selector: 'products.arName',
         sortable: true,
         grow: 1,
         // minWidth: '225px',
         filter: {
             enabled: true
         }
-
-    },
-    {
-        name: 'Order',
-        selector: 'order',
-        sortable: true,
-        grow: 1,
-        // minWidth: '225px',
-        filter: {
-            enabled: true
-        }
-
     },
     {
         name: 'Is Active',
@@ -269,7 +226,7 @@ class BrandList extends Component {
                     <Col sm='12'>
                         <DataTable
                             ref={(ref) => { this.dataTableRef = ref }} // Corrected line
-                            _fetchData={(params, callback) => _getDatatable('Brands/Brands_Read', {...params, filter: {...params.filter}}, callback)}
+                            _fetchData={(params, callback) => _getDatatable('Products/Products_Read', {...params, filter: {...params.filter}}, callback)}
                             columns={tableColumns(this.state, this.openDetailsModal, this._editBasicInfoModal, this.editBasicInfoModal, hasAction, this.handleViewDetails)}
                             hasIndexing={false}
                             hasFilter={false}

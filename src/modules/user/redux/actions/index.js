@@ -85,6 +85,66 @@ export const _addAdmin = (data, callback, callbackErr = () => {}) => {
       callbackErr(data?.data?.errors)
     })
 }
+//***************** Admins *******************//
+export const _addProduct = (data, callback, callbackErr = () => {}) => {
+    API_WithSwal.post(`/Managment/CreateUser`, data)//.....................
+        .then(function ({data}) {
+            callback(data)
+        })
+        .catch(function (data) {
+            callbackErr(data?.data?.errors)
+        })
+}
+//***************** Admins *******************//
+export const _addOrder = (data, callback, callbackErr = () => {}) => {
+    API_WithSwal.post(`/Managment/CreateUser`, data)//.....................
+        .then(function ({data}) {
+            callback(data)
+        })
+        .catch(function (data) {
+            callbackErr(data?.data?.errors)
+        })
+}
+//***************** Admins *******************//
+export const _addCarSell = (data, callback, callbackErr = () => {}) => {
+    API_WithSwal.post(`/Managment/CreateUser`, data)//.....................
+        .then(function ({data}) {
+            callback(data)
+        })
+        .catch(function (data) {
+            callbackErr(data?.data?.errors)
+        })
+}
+//***************** Admins *******************//
+export const _addCarModel = (data, callback, callbackErr = () => {}) => {
+    API_WithSwal.post(`/Managment/CreateUser`, data)//.....................
+        .then(function ({data}) {
+            callback(data)
+        })
+        .catch(function (data) {
+            callbackErr(data?.data?.errors)
+        })
+}
+//***************** Admins *******************//
+export const _addBrand = (data, callback, callbackErr = () => {}) => {
+    API_WithSwal.post(`/Managment/CreateUser`, data)//.....................
+        .then(function ({data}) {
+            callback(data)
+        })
+        .catch(function (data) {
+            callbackErr(data?.data?.errors)
+        })
+}
+//***************** Admins *******************//
+export const _addBrandsCountry = (data, callback, callbackErr = () => {}) => {
+    API_WithSwal.post(`/BrandsCountry/BrandsCountry_Create`, data)
+        .then(function ({data}) {
+            callback(data)
+        })
+        .catch(function (data) {
+            callbackErr(data?.data?.errors)
+        })
+}
 //************************************//
 export const _editAdminInfo = (data, callback, callbackErr = () => {}) => {
   API_WithSwal.put(`/Managment/UpdateUser`, data)
@@ -474,6 +534,66 @@ export const _getSeriesWithDetails = (categoryId, callback, callbackErr = () => 
 }
 //************************************//
 export const _editCategory = (data, callback, callbackErr = () => {}) => {
+    API_WithSwal.put(`/Categories/Update`, data)
+        .then(function ({data}) {
+            callback(data)
+        })
+        .catch(function (data) {
+            callbackErr(data?.data?.errors)
+        })
+}
+//************************************//
+export const _editProduct = (data, callback, callbackErr = () => {}) => {
+    API_WithSwal.put(`/Categories/Update`, data)//......................
+        .then(function ({data}) {
+            callback(data)
+        })
+        .catch(function (data) {
+            callbackErr(data?.data?.errors)
+        })
+}
+//************************************//
+export const _editOrder = (data, callback, callbackErr = () => {}) => {
+    API_WithSwal.put(`/Categories/Update`, data)//......................
+        .then(function ({data}) {
+            callback(data)
+        })
+        .catch(function (data) {
+            callbackErr(data?.data?.errors)
+        })
+}
+//************************************//
+export const _editCarSell = (data, callback, callbackErr = () => {}) => {
+    API_WithSwal.put(`/Categories/Update`, data)//......................
+        .then(function ({data}) {
+            callback(data)
+        })
+        .catch(function (data) {
+            callbackErr(data?.data?.errors)
+        })
+}
+//************************************//
+export const _editCarModel = (data, callback, callbackErr = () => {}) => {
+    API_WithSwal.put(`/Categories/Update`, data)//......................
+        .then(function ({data}) {
+            callback(data)
+        })
+        .catch(function (data) {
+            callbackErr(data?.data?.errors)
+        })
+}
+//************************************//
+export const _editBrand = (data, callback, callbackErr = () => {}) => {
+    API_WithSwal.put(`/Categories/Update`, data)//......................
+        .then(function ({data}) {
+            callback(data)
+        })
+        .catch(function (data) {
+            callbackErr(data?.data?.errors)
+        })
+}
+//************************************//
+export const _editBrandsCountry = (data, callback, callbackErr = () => {}) => {
     API_WithSwal.put(`/Categories/Update`, data)
         .then(function ({data}) {
             callback(data)
