@@ -25,8 +25,8 @@ import {ButtonSpinner, ErrorMessages} from '@src/components'
 import {useTrans} from '@hooks/useTrans'
 
 import {
-  _addAdmin, _addBrand,
-  _editAdminInfo, _editBrand,
+  _addAdmin, _addCarModel,
+  _editAdminInfo, _editCarModel,
   _editCategory,
   _getAllResponsiblesWithQ,
   _getAllRolesWithQ
@@ -50,9 +50,8 @@ const BasicInfoModal = (props) => {
 
   const loading = useSelector(state => state.app.loading)
   const { errors, handleSubmit, control } = useForm()
-  const isEditAction = !!props.data?.id
-
   // const isEditAction = _.size(`${props.data.id}`) > 0
+  const isEditAction = !!props.data?.id
   //const [open, setOpen] = useState(true)
   const [valErrors, setValErrors] = useState({})
 
@@ -68,7 +67,7 @@ const BasicInfoModal = (props) => {
     setValErrors({})
     data.isActive = data.isActive.value
     if (isEditAction) {
-      _editBrand(
+      _editCarModel(
         {...props.data, ...data},
         () => {
           props.successCallback()
@@ -85,7 +84,7 @@ const BasicInfoModal = (props) => {
         }
       )
     } else {
-      _addBrand(
+      _addCarModel(
         data,
         () => {
           props.successCallback()
@@ -121,7 +120,7 @@ const BasicInfoModal = (props) => {
        {/* flex-column: Arranges the form's child elements in a vertical column.*/}
        {/* handleSubmit is a function from a form that validates the form data.*/}
         <ModalHeader toggle={_close} className='mb-1'>
-          {trans(isEditAction ? 'user.actions.editBrand' : 'user.actions.addBrand')}
+          {trans(isEditAction ? 'user.actions.editCarModel' : 'user.actions.addCarModel')}
         </ModalHeader>
         <ModalBody className='flex-grow-1 pb-sm-0 pb-3 modal-body'>
 

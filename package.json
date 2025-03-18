@@ -36,6 +36,7 @@
     "react-equation": "^1.0.0-rc.1",
     "react-hotkeys-hook": "^4.3.0",
     "react-image-marker": "^1.2.0",
+    "react-photo-view": "^1.2.7",
     "react-to-print": "^2.15.1",
     "rrule": "^2.7.1",
     "use-scan-detection": "^0.2.3"

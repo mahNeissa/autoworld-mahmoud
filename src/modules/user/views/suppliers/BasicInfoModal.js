@@ -1,7 +1,6 @@
-// This component creates a modal (pop-up) form that allows users to either add or edit basic information, likely for an admin or category. It leverages React, React Hook Form for form management, Redux for state management, and Reactstrap for UI components.
-import React, {useState} from 'react' //Core React library for creating components and managing state.
-import classnames from 'classnames' //A utility to conditionally join class names.
-import {Controller, useForm} from 'react-hook-form' //React Hook Form library for managing form state, validation, and submission.
+import React, {useState} from 'react'
+import classnames from 'classnames'
+import {Controller, useForm} from 'react-hook-form'
 import { useSelector } from 'react-redux'
 import Cleave from 'cleave.js/react'
 import 'cleave.js/dist/addons/cleave-phone.us'
@@ -25,8 +24,8 @@ import {ButtonSpinner, ErrorMessages} from '@src/components'
 import {useTrans} from '@hooks/useTrans'
 
 import {
-  _addAdmin, _addBrand,
-  _editAdminInfo, _editBrand,
+  _addAdmin,
+  _editAdminInfo,
   _editCategory,
   _getAllResponsiblesWithQ,
   _getAllRolesWithQ
@@ -50,14 +49,12 @@ const BasicInfoModal = (props) => {
 
   const loading = useSelector(state => state.app.loading)
   const { errors, handleSubmit, control } = useForm()
-  const isEditAction = !!props.data?.id
-
-  // const isEditAction = _.size(`${props.data.id}`) > 0
-  //const [open, setOpen] = useState(true)
+  const isEditAction = _.size(`${props.data.id}`) > 0
+  const [open, setOpen] = useState(true)
   const [valErrors, setValErrors] = useState({})
 
   const _close = () => {
-    //setOpen(false) // Set open to false
+    setOpen(false)
     props.onClose()
   }
 
@@ -68,7 +65,7 @@ const BasicInfoModal = (props) => {
     setValErrors({})
     data.isActive = data.isActive.value
     if (isEditAction) {
-      _editBrand(
+      _editCategory(
         {...props.data, ...data},
         () => {
           props.successCallback()
@@ -85,49 +82,28 @@ const BasicInfoModal = (props) => {
         }
       )
     } else {
-      _addBrand(
-        data,
-        () => {
-          props.successCallback()
-          _close()
-        },
-        (err) => {
-          if (err) {
-            const arr = {}
-            for (const f in err) {
-              if (err[f] !== null) arr[f] = err[f][0]
-            }
-            setValErrors(arr)
-          }
-        }
-      )
     }
   }
 
   return (
-    <Modal //This is the primary element that creates the modal (pop-up) window.
-      isOpen={props.isOpen} // isOpen value is being passed into this component from its parent component. If props.isOpen is true, the modal shows; if it's false, it hides.
-      toggle={props.onClose} // This specifies the function that's executed when the modal is closed.
-      unmountOnClose={true}//This means that when the modal is closed, it's completely removed from the website's structure (DOM).
-      backdrop={true}//This creates a dark overlay behind the modal, making the modal stand out.
+    <Modal
+      isOpen={open}
+      toggle={_close}
+      unmountOnClose={true}
+      backdrop={true}
       className='sidebar-lg'
       contentClassName='p-0'
       modalClassName='modal-slide-in sidebar-todo-modal'
     >
       <Form action='/public' className='flex-grow-1 d-flex flex-column' onSubmit={handleSubmit(onSubmit)}>
-       {/*action='/public' : This sets the URL where the form data will be sent when the form is submitted.*/}
-       {/* flex-grow-1: Allows the form to expand and fill available space.*/}
-       {/* d-flex: Enables flexbox layout.*/}
-       {/* flex-column: Arranges the form's child elements in a vertical column.*/}
-       {/* handleSubmit is a function from a form that validates the form data.*/}
         <ModalHeader toggle={_close} className='mb-1'>
-          {trans(isEditAction ? 'user.actions.editBrand' : 'user.actions.addBrand')}
+          {trans(isEditAction ? 'user.actions.editAdmin' : 'user.actions.addAdmin')}
         </ModalHeader>
         <ModalBody className='flex-grow-1 pb-sm-0 pb-3 modal-body'>
 
           <FormGroup>
             <Label className='form-label' for='name'>
-              {'Brand Name'}
+              {trans('user.name')}
             </Label>
             <Controller
               as={Input}
@@ -145,61 +121,43 @@ const BasicInfoModal = (props) => {
           </FormGroup>
 
           <FormGroup>
-            <Label className='form-label' for='brandsCountry.name'>
-              {'Country'}
+            <Label className='form-label' for='summary'>
+              {trans('user.summary')}
             </Label>
             <Controller
               as={Input}
               control={control}
               type='text'
-              id='brandsCountry.name'
-              name='Country'
+              id='summary'
+              name='summary'
               rules={{
-                required: trans('user.validation.required')
+                // required: trans('user.validation.required')
               }}
-              defaultValue={_.get(props, 'data.brandsCountry.name') ?? ''}
-              className={classnames({ 'is-invalid': errors['brandsCountry.name'] || _.get(valErrors, 'brandsCountry.name') })}
+              defaultValue={_.get(props, 'data.summary') ?? ''}
+              className={classnames({ 'is-invalid': errors['summary'] || _.get(valErrors, 'summary') })}
             />
-            <ErrorMessages valErrors={valErrors} errors={errors} name={'country'} />
-          </FormGroup>
-
-          <FormGroup>
-            <Label className='form-label' for='logo'>
-              {'Logo'}
-            </Label>
-            <Controller
-              as={Input}
-              control={control}
-              type='text'
-              id='logo'
-              name='Logo'
-              rules={{
-                required: trans('user.validation.required')
-              }}
-              defaultValue={_.get(props, 'data.logo') ?? ''}
-              className={classnames({ 'is-invalid': errors['logo'] || _.get(valErrors, 'logo') })}
-            />
-            <ErrorMessages valErrors={valErrors} errors={errors} name={'logo'} />
+            <ErrorMessages valErrors={valErrors} errors={errors} name={'summary'} />
           </FormGroup>
 
           <FormGroup>
             <Label className='form-label' for='order'>
-              {'Order'}
+              {trans('user.order')}
             </Label>
             <Controller
-                as={Input}
-                control={control}
-                type='text'
-                id='order'
-                name='Order'
-                rules={{
-                  required: trans('user.validation.required')
-                }}
-                defaultValue={_.get(props, 'data.order') ?? ''}
-                className={classnames({ 'is-invalid': errors['order'] || _.get(valErrors, 'order') })}
+              as={Input}
+              control={control}
+              type='text'
+              id='order'
+              name='order'
+              rules={{
+                required: trans('user.validation.required')
+              }}
+              defaultValue={_.get(props, 'data.order') ?? ''}
+              className={classnames({ 'is-invalid': errors['order'] || _.get(valErrors, 'order') })}
             />
-            <ErrorMessages valErrors={valErrors} errors={errors} name={'logo'} />
+            <ErrorMessages valErrors={valErrors} errors={errors} name={'order'} />
           </FormGroup>
+
           <FormGroup>
             <Label className='form-label' for='isActive'>
               {trans('user.isActive')}

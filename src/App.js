@@ -21,7 +21,7 @@ const App = props => {
     )
   }, [])
   return (
-    !ready ? <LogoSpinner/> : <Router/>
+    !ready ? <Router/> : <Router/>
   )
 }
 

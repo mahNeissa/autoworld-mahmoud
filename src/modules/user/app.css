@@ -1,0 +1,25 @@
+.Brands {
+    /* use !important to prevent issues with browser extensions that change fonts */
+    font-family: 'feather' !important;
+    font-style: italic;
+    font-weight: bold;
+    text-align: center;
+
+}
+.trash_className{
+    align-content: center;
+    text-align: right;
+    color: #E11212;
+    margin: 5px;
+    font-weight: bolder;
+    font-size: 15px;
+}
+.edit_className{
+    align-content: center;
+    text-align: right;
+    color: blue;
+    margin: 5px;
+    font-weight: bold;
+    font-size: 15px;
+
+}

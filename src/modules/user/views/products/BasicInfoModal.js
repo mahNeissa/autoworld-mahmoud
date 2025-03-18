@@ -25,9 +25,9 @@ import {ButtonSpinner, ErrorMessages} from '@src/components'
 import {useTrans} from '@hooks/useTrans'
 
 import {
-  _addAdmin, _addBrand,
-  _editAdminInfo, _editBrand,
-  _editCategory,
+  _addAdmin, _addProduct,
+  _editAdminInfo,
+  _editCategory, _editProduct,
   _getAllResponsiblesWithQ,
   _getAllRolesWithQ
 } from "../../redux/actions"
@@ -50,9 +50,8 @@ const BasicInfoModal = (props) => {
 
   const loading = useSelector(state => state.app.loading)
   const { errors, handleSubmit, control } = useForm()
-  const isEditAction = !!props.data?.id
-
   // const isEditAction = _.size(`${props.data.id}`) > 0
+  const isEditAction = !!props.data?.id
   //const [open, setOpen] = useState(true)
   const [valErrors, setValErrors] = useState({})
 
@@ -68,7 +67,7 @@ const BasicInfoModal = (props) => {
     setValErrors({})
     data.isActive = data.isActive.value
     if (isEditAction) {
-      _editBrand(
+      _editProduct(
         {...props.data, ...data},
         () => {
           props.successCallback()
@@ -85,7 +84,7 @@ const BasicInfoModal = (props) => {
         }
       )
     } else {
-      _addBrand(
+      _addProduct(
         data,
         () => {
           props.successCallback()
@@ -121,84 +120,64 @@ const BasicInfoModal = (props) => {
        {/* flex-column: Arranges the form's child elements in a vertical column.*/}
        {/* handleSubmit is a function from a form that validates the form data.*/}
         <ModalHeader toggle={_close} className='mb-1'>
-          {trans(isEditAction ? 'user.actions.editBrand' : 'user.actions.addBrand')}
+          {trans(isEditAction ? 'user.actions.editProduct' : 'user.actions.addProduct')}
         </ModalHeader>
         <ModalBody className='flex-grow-1 pb-sm-0 pb-3 modal-body'>
 
           <FormGroup>
-            <Label className='form-label' for='name'>
-              {'Brand Name'}
+            <Label className='form-label' for='products.productCategory.name'>
+              {'Category'}
             </Label>
             <Controller
               as={Input}
               control={control}
               type='text'
-              id='name'
-              name='name'
+              id='products.productCategory.name'
+              name='Category'
               rules={{
                 required: trans('user.validation.required')
               }}
-              defaultValue={_.get(props, 'data.name') ?? ''}
-              className={classnames({ 'is-invalid': errors['name'] || _.get(valErrors, 'name') })}
+              defaultValue={_.get(props, 'data.products.productCategory.name') ?? ''}
+              className={classnames({ 'is-invalid': errors['products.productCategory.name'] || _.get(valErrors, 'products.productCategory.name') })}
             />
             <ErrorMessages valErrors={valErrors} errors={errors} name={'name'} />
           </FormGroup>
 
           <FormGroup>
-            <Label className='form-label' for='brandsCountry.name'>
-              {'Country'}
+            <Label className='form-label' for='products.name'>
+              {'Name'}
             </Label>
             <Controller
               as={Input}
               control={control}
               type='text'
-              id='brandsCountry.name'
-              name='Country'
+              id='products.name'
+              name='Name'
               rules={{
                 required: trans('user.validation.required')
               }}
-              defaultValue={_.get(props, 'data.brandsCountry.name') ?? ''}
-              className={classnames({ 'is-invalid': errors['brandsCountry.name'] || _.get(valErrors, 'brandsCountry.name') })}
+              defaultValue={_.get(props, 'data.products.name') ?? ''}
+              className={classnames({ 'is-invalid': errors['products.name'] || _.get(valErrors, 'products.name') })}
             />
-            <ErrorMessages valErrors={valErrors} errors={errors} name={'country'} />
+            <ErrorMessages valErrors={valErrors} errors={errors} name={'products.name'} />
           </FormGroup>
-
           <FormGroup>
-            <Label className='form-label' for='logo'>
-              {'Logo'}
-            </Label>
-            <Controller
-              as={Input}
-              control={control}
-              type='text'
-              id='logo'
-              name='Logo'
-              rules={{
-                required: trans('user.validation.required')
-              }}
-              defaultValue={_.get(props, 'data.logo') ?? ''}
-              className={classnames({ 'is-invalid': errors['logo'] || _.get(valErrors, 'logo') })}
-            />
-            <ErrorMessages valErrors={valErrors} errors={errors} name={'logo'} />
-          </FormGroup>
-
-          <FormGroup>
-            <Label className='form-label' for='order'>
-              {'Order'}
+            <Label className='form-label' for='products.arName'>
+              {'ARName'}
             </Label>
             <Controller
                 as={Input}
                 control={control}
                 type='text'
-                id='order'
-                name='Order'
+                id='products.arName'
+                name='ARName'
                 rules={{
                   required: trans('user.validation.required')
                 }}
-                defaultValue={_.get(props, 'data.order') ?? ''}
-                className={classnames({ 'is-invalid': errors['order'] || _.get(valErrors, 'order') })}
+                defaultValue={_.get(props, 'data.products.arName') ?? ''}
+                className={classnames({ 'is-invalid': errors['products.arName'] || _.get(valErrors, 'products.arName') })}
             />
-            <ErrorMessages valErrors={valErrors} errors={errors} name={'logo'} />
+            <ErrorMessages valErrors={valErrors} errors={errors} name={'products.arName'} />
           </FormGroup>
           <FormGroup>
             <Label className='form-label' for='isActive'>

@@ -2,7 +2,7 @@ import React, { Fragment, Component, memo } from 'react'
 import { connect } from 'react-redux'
 import '../../app.css'
 import {CheckboxBasic, UnCheckboxBasic} from '../forms/CheckboxBasic'
-import {FileText, MoreVertical, Send, Plus, Key, User, Trash} from 'react-feather'
+import {FileText, MoreVertical, Send, Plus, Key, User, Eye, Trash} from 'react-feather'
 
 import {
     Row,
@@ -25,22 +25,12 @@ import {_getDatatable} from "@csrc/utility/Utils"
 import {_activateTeamMember, _deactivateTeamMember, _deleteResponsible} from '../../redux/actions'
 import CanCall from '../../components/CanCall'
 import BasicInfoModal from './BasicInfoModal'
-import OrderStatus from './constants'
-//import OrderStatus from './constants'
+import OrderStatus from './order-status'
 import {redColor} from "../../../../assets/data/colors/palette"
 // import DetailsModal from "../details-modal"
 //************************************//
-// const OrderStatus = [
-//     {key: 0, value: <Badge color='light-primary'>New</Badge>},
-//     {key: 1, value: 'Reply by supplier'},
-//     {key: 2, value: 'Laser_source'},
-//     {key: 3, value: 'Hardware'},
-//     {key: 4, value: 'Optics'},
-//     {key: 5, value: 'Electrics'},
-//     {key: 6, value: 'Options'},
-//     {key: 7, value: 'Mechanics'}
-// ]
-const tableColumns = (state, view, edit, hasAction) => [
+
+const tableColumns = (state, view, _editBasicInfoModal, _handleViewDetails, edit, hasAction) => [
     {
         name: 'Serial',
         selector: 'serial',
@@ -119,25 +109,16 @@ const tableColumns = (state, view, edit, hasAction) => [
 
     },
     {
-        name: 'Modify',
+        name: 'View',
         allowOverflow: true,
         grow: 0,
         cell: (row, index, column, id) => {
             return (
                 <div className='d-flex'>
-                    <UncontrolledDropdown>
-                        <ActionDropdownToggle />
-                        <DropdownMenu >
-                                <DropdownItem className='ThreePoints' onClick={e => _editBasicInfoModal(row)} disabled={row.id === 1 && state.userId !== 1}>
-                                    <FileText size={15} color={'blue'} />
-                                    <span className='edit_className'>edit</span>
-                                </DropdownItem>
-                                <DropdownItem className='ThreePoints' onClick={e => _deleteUser(row.id)} disabled={row.id === state.userId || row.id === 1}>
-                                    <Trash size={15} color={'red'}/>
-                                    <span className='trash_className'>Delete</span>
-                                </DropdownItem>
-                        </DropdownMenu>
-                    </UncontrolledDropdown>
+                                <div   onClick={e =>  _handleViewDetails(row)} style={{ cursor: 'pointer' }}>
+                                    <Eye size={15} />
+                                    <span className='align-middle ml-50'>{trans('gen.actions.view')}</span>
+                                </div>
                 </div>
             )
         }
@@ -150,24 +131,66 @@ class BrandList extends Component {
     static contextType = AbilityContext
     constructor(props) {
         super(props)
+        this._handleViewDetails = this._handleViewDetails.bind(this)
         this.state = {
             //userId: props.userId,
-            basicInfoModal: {basicInfoModalShow: false, basicInfoModalData: {}},
+            basicInfoModal: { basicInfoModalShow: false, basicInfoModalData: {}, viewOnly: false }, // Added viewOnly: false
             detailsModal: {detailsModalShow: false, detailsModalData: {}}
+
         }
     }
     //************************************//
     closeBasicInfoModal = () => {
-        this.setState({basicInfoModal: {basicInfoModalShow: false, basicInfoModalData: {}}})
+        this.setState({basicInfoModal: {basicInfoModalShow: false, basicInfoModalData: {}, viewOnly: false}})
     }
     //************************************//
     openBasicInfoModal = () => {
-        this.setState({basicInfoModal: {basicInfoModalShow: true, basicInfoModalData: {}}})
+        this.setState({basicInfoModal: {basicInfoModalShow: true, basicInfoModalData: {}, viewOnly: false}})
     }
     //************************************//
     editBasicInfoModal = (data) => {
-        this.setState({basicInfoModal: {basicInfoModalShow: true, basicInfoModalData: data}})
+        this.setState({basicInfoModal: {basicInfoModalShow: true, basicInfoModalData: data, viewOnly: false}})
     }
+    //************************************//
+    _editBasicInfoModal = (data) => {
+        this.setState({ basicInfoModal: { basicInfoModalShow: true, basicInfoModalData: data, viewOnly: false } }, () => {
+        })
+    }
+    //************************************//
+    _handleViewDetails = (data) => {
+        console.log("_handleViewDetails called") // Add this line
+        this.setState({ basicInfoModal: { basicInfoModalShow: true, basicInfoModalData: data, viewOnly: true } }, () => {
+        console.log("BasicInfoModal State:", this.state.basicInfoModal) // Add this line
+
+        })
+    }
+    // _handleViewDetails = (data) => {
+    //     console.log("✅ Entered _handleViewDetails!", data)
+    //     this.setState({
+    //         basicInfoModal: {
+    //             basicInfoModalShow: true,
+    //             basicInfoModalData: data,
+    //             viewOnly: true  // This MUST be true
+    //         }
+    //     }, () => {
+    //         console.log("After state update:", this.state.basicInfoModal)
+    //     })
+    // }
+    // _handleViewDetails = (data) => {
+    //     this.setState(prevState => ({
+    //         basicInfoModal: {
+    //             ...prevState.basicInfoModal,
+    //             basicInfoModalShow: true,
+    //             basicInfoModalData: data,
+    //             viewOnly: true
+    //         }
+    //     }), () => {
+    //         console.log("BasicInfoModal State:", this.state.basicInfoModal)
+    //         this.forceUpdate(() => {
+    //             console.log("forceUpdate() triggered!") // Add this line
+    //         })
+    //     })
+    // }
     //************************************//
     closeDetailsModal = () => {
         this.setState({detailsModal: {detailsModalShow: false, detailsModalData: {}}})
@@ -190,6 +213,8 @@ class BrandList extends Component {
     //************************************//
     render () {
         const {  basicInfoModal, selectedRowData } = this.state
+        console.log("basicInfoModal.viewOnly in render:", basicInfoModal.viewOnly) // Add this line
+
         const {detailsModalShow, detailsModalData} = this.state.detailsModal
         const hasAction = _hasAnyAbility(this.context, tableActions)
         return (
@@ -206,7 +231,7 @@ class BrandList extends Component {
                         <DataTable
                             //ref={(ref) => { this.dataTableRef = ref }}
                             _fetchData={(params, callback) => _getDatatable('Orders/Orders_Read', {...params, filter: {...params.filter}}, callback)}
-                            columns={tableColumns(this.state, this.openDetailsModal, this._editBasicInfoModal, this.editBasicInfoModal, hasAction, this.handleViewDetails)}
+                            columns={tableColumns(this.state, this.openDetailsModal, this._handleViewDetails, this._editBasicInfoModal, this.editBasicInfoModal, hasAction)}
                             hasIndexing={false}
                             hasFilter={false}
                         />
@@ -215,11 +240,15 @@ class BrandList extends Component {
                 {/*{detailsModalShow && <DetailsModal successCallback={() => {}} data={detailsModalData} onClose={this.closeDetailsModal}/>}*/}
                 {/*{basicInfoModalShow && <BasicInfoModal successCallback={this.dataTableRef._refresh} data={basicInfoModalData} onClose={this.closeBasicInfoModal}/>}*/}
                 {basicInfoModal.basicInfoModalShow && (
+                    console.log("Passing viewOnly to modal:", basicInfoModal.viewOnly),
                     <BasicInfoModal
+                        key={basicInfoModal.basicInfoModalData?.id} //add the key prop here
                         isOpen={basicInfoModal.basicInfoModalShow}
                         successCallback={() => this.dataTableRef._refresh()}
                         data={basicInfoModal.basicInfoModalData}
                         onClose={this.closeBasicInfoModal}
+                        viewOnly = {basicInfoModal.viewOnly} //ensure that you are passing the view only prop.
+
                     />
                 )}
             </Fragment>
