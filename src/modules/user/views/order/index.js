@@ -25,7 +25,7 @@ import {_getDatatable} from "@csrc/utility/Utils"
 import {_activateTeamMember, _deactivateTeamMember, _deleteResponsible} from '../../redux/actions'
 import CanCall from '../../components/CanCall'
 import BasicInfoModal from './BasicInfoModal'
-import OrderStatus from './order-status'
+import {OrderStatus, trueFaulse} from './order-status'
 import {redColor} from "../../../../assets/data/colors/palette"
 // import DetailsModal from "../details-modal"
 //************************************//
@@ -164,33 +164,6 @@ class BrandList extends Component {
 
         })
     }
-    // _handleViewDetails = (data) => {
-    //     console.log("✅ Entered _handleViewDetails!", data)
-    //     this.setState({
-    //         basicInfoModal: {
-    //             basicInfoModalShow: true,
-    //             basicInfoModalData: data,
-    //             viewOnly: true  // This MUST be true
-    //         }
-    //     }, () => {
-    //         console.log("After state update:", this.state.basicInfoModal)
-    //     })
-    // }
-    // _handleViewDetails = (data) => {
-    //     this.setState(prevState => ({
-    //         basicInfoModal: {
-    //             ...prevState.basicInfoModal,
-    //             basicInfoModalShow: true,
-    //             basicInfoModalData: data,
-    //             viewOnly: true
-    //         }
-    //     }), () => {
-    //         console.log("BasicInfoModal State:", this.state.basicInfoModal)
-    //         this.forceUpdate(() => {
-    //             console.log("forceUpdate() triggered!") // Add this line
-    //         })
-    //     })
-    // }
     //************************************//
     closeDetailsModal = () => {
         this.setState({detailsModal: {detailsModalShow: false, detailsModalData: {}}})
