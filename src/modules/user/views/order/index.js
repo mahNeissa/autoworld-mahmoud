@@ -53,16 +53,16 @@ const tableColumns = (state, view, _editBasicInfoModal, _handleViewDetails, edit
             enabled: true
         }
     },
-    {
-        name: 'Category',
-        selector: 'categoryId',
-        sortable: true,
-        grow: 1,
-        // minWidth: '225px',
-        filter: {
-            enabled: true
-        }
-    },
+    // {
+    //     name: 'Category',
+    //     selector: 'categoryId',
+    //     sortable: true,
+    //     grow: 1,
+    //     // minWidth: '225px',
+    //     filter: {
+    //         enabled: true
+    //     }
+    // },
     {
         name: 'Insert Date',
         selector: 'insertDate',
@@ -71,8 +71,20 @@ const tableColumns = (state, view, _editBasicInfoModal, _handleViewDetails, edit
         // minWidth: '225px',
         filter: {
             enabled: true
+        },
+        cell: row => {
+            return row.lastUpdateDate
+                ? (() => {
+                    const date = new Date(row.lastUpdateDate) // Use row.lastUpdateDate
+                    const year = date.getFullYear()
+                    const month = String(date.getMonth() + 1).padStart(2, '0')
+                    const day = String(date.getDate()).padStart(2, '0')
+                    const hours = String(date.getHours()).padStart(2, '0')
+                    const minutes = String(date.getMinutes()).padStart(2, '0')
+                    return `${year}-${month}-${day} ${hours}:${minutes}`
+                })()
+                : 'N/A'
         }
-
     },
     {
         name: 'LastUpdateDate',
@@ -82,8 +94,20 @@ const tableColumns = (state, view, _editBasicInfoModal, _handleViewDetails, edit
         // minWidth: '225px',
         filter: {
             enabled: true
+        },
+        cell: row => {
+            return row.lastUpdateDate
+                ? (() => {
+                    const date = new Date(row.lastUpdateDate) // Use row.lastUpdateDate
+                    const year = date.getFullYear()
+                    const month = String(date.getMonth() + 1).padStart(2, '0')
+                    const day = String(date.getDate()).padStart(2, '0')
+                    const hours = String(date.getHours()).padStart(2, '0')
+                    const minutes = String(date.getMinutes()).padStart(2, '0')
+                    return `${year}-${month}-${day} ${hours}:${minutes}`
+                })()
+                : 'N/A'
         }
-
     },
     {
         name: 'Status',
@@ -108,8 +132,20 @@ const tableColumns = (state, view, _editBasicInfoModal, _handleViewDetails, edit
         // minWidth: '225px',
         filter: {
             enabled: true
+        },
+        cell: row => {
+            return row.lastUpdateDate
+                ? (() => {
+                    const date = new Date(row.lastUpdateDate) // Use row.lastUpdateDate
+                    const year = date.getFullYear()
+                    const month = String(date.getMonth() + 1).padStart(2, '0')
+                    const day = String(date.getDate()).padStart(2, '0')
+                    const hours = String(date.getHours()).padStart(2, '0')
+                    const minutes = String(date.getMinutes()).padStart(2, '0')
+                    return `${year}-${month}-${day} ${hours}:${minutes}`
+                })()
+                : 'N/A'
         }
-
     },
     {
         name: 'Details',
@@ -198,7 +234,6 @@ class BrandList extends Component {
 
             <Fragment>
 
-                <StatusStepper/>
 
                 <Breadcrumbs breadCrumbMainTitle={''} breadCrumbTitle={<h1 className={'Brands'}> Orders </h1>} breadCrumbParent='' breadCrumbActive='' >
                     <Button.Ripple className='btn-icon' color='primary' onClick={this.openBasicInfoModal}>

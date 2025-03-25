@@ -27,9 +27,9 @@ import _ from "lodash"
 import Select from 'react-select'
 import defaultUserIcon from '../../assets/images/no-image.jpg'
 import pdfIcon from '../../assets/images/PDF.jpg' // Replace with your PDF icon path
-
 import {trans} from '@utils'
 import {ButtonSpinner, ErrorMessages} from '@src/components'
+import StatusStepper from "../../../../components/StatusStepper" // Import StatusStepper
 
 
 const BasicInfoModal = (props) => {
@@ -117,6 +117,24 @@ const BasicInfoModal = (props) => {
       window.open(mapUrl, '_blank') // Open in a new tab
     }
   }
+  // StatusStepper Logic
+  console.log("props.data.status:", props.data.status)
+  const orderStatusValue = parseInt(_.get(props, 'data.status'))
+  console.log("orderStatusValue:", orderStatusValue)
+  const currentStep = orderStatusValue !== undefined ? orderStatusValue : 0
+  console.log("currentStep:", currentStep)
+  const statusSteps = [
+    { label: "New", name: "New", content: <h1></h1> },
+    { label: "Reply", name: "Reply", content: <h1></h1> },
+    { label: "Selected", name: "Selected", content: <h1></h1> },
+    { label: "Ordered", name: "Ordered", content: <h1></h1> },
+    { label: "Packaging", name: "Packaging", content: <h1></h1> },
+    { label: "Sent", name: "Sent", content: <h1></h1> },
+    { label: "Finished", name: "Finished", content: <h1></h1> }
+  ]
+
+  // console.log("statusSteps before return:", statusSteps)// Add this line
+
   return (
     <Modal
       isOpen={open}
@@ -130,6 +148,8 @@ const BasicInfoModal = (props) => {
 
     >
       <Form className='flex-grow-1 d-flex flex-column' >
+        {/* StatusStepper added here */}
+        <StatusStepper startingStep={currentStep} steps={statusSteps}/>
         <ModalHeader toggle={_close} className="mb-1">
           <div style={{display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center'}}>
             <div style={{whiteSpace: 'nowrap'}}>
@@ -351,60 +371,48 @@ const BasicInfoModal = (props) => {
                 </Row>
                 <Row>
                   <Col md="2">
-                  <PhotoProvider>
-
-                    {renderAttachment(
-                        _.get(props, 'data.firstAttachment')
+                    {props.data.firstAttachment && (
+                        <PhotoProvider>
+                          {renderAttachment(_.get(props, 'data.firstAttachment'))}
+                        </PhotoProvider>
                     )}
-                  </PhotoProvider>
                   </Col>
                   <Col md="2">
-                    <PhotoProvider>
-
-                      {renderAttachment(
-                          _.get(props, 'data.secondAttachment')
-                      )}
-                    </PhotoProvider>
-
+                    {props.data.secondAttachment && (
+                        <PhotoProvider>
+                          {renderAttachment(_.get(props, 'data.secondAttachment'))}
+                        </PhotoProvider>
+                    )}
                   </Col>
                   <Col md="2">
-                    <PhotoProvider>
-
-                      {renderAttachment(
-                          _.get(props, 'data.thirdAttachment')
-                      )}
-                    </PhotoProvider>
-
+                    {props.data.thirdAttachment && (
+                        <PhotoProvider>
+                          {renderAttachment(_.get(props, 'data.thirdAttachment'))}
+                        </PhotoProvider>
+                    )}
                   </Col>
                   <Col md="2">
-                    <PhotoProvider>
-
-                      {renderAttachment(
-                          _.get(props, 'data.fourthAttachment')
-                      )}
-                    </PhotoProvider>
-
+                    {props.data.fourthAttachment && (
+                        <PhotoProvider>
+                          {renderAttachment(_.get(props, 'data.fourthAttachment'))}
+                        </PhotoProvider>
+                    )}
                   </Col>
                   <Col md="2">
-                    <PhotoProvider>
-
-                      {renderAttachment(
-                          _.get(props, 'data.fifthAttachment')
-                      )}
-                    </PhotoProvider>
-
+                    {props.data.fifthAttachment && (
+                        <PhotoProvider>
+                          {renderAttachment(_.get(props, 'data.fifthAttachment'))}
+                        </PhotoProvider>
+                    )}
                   </Col>
                   <Col md="2">
-                    <PhotoProvider>
-
-                      {renderAttachment(
-                          _.get(props, 'data.sixthAttachment')
-                      )}
-                    </PhotoProvider>
-
+                    {props.data.sixthAttachment && (
+                        <PhotoProvider>
+                          {renderAttachment(_.get(props, 'data.sixthAttachment'))}
+                        </PhotoProvider>
+                    )}
                   </Col>
                 </Row>
-
               </Col>
             </Row>
 
