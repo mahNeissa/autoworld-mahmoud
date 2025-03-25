@@ -90,6 +90,7 @@ const tableColumns = (state, view, _editBasicInfoModal, _handleViewDetails, edit
         selector: 'status',
         sortable: true,
         grow: 1,
+        center: true,
         // minWidth: '225px',
         filter: {
             enabled: true
@@ -111,15 +112,15 @@ const tableColumns = (state, view, _editBasicInfoModal, _handleViewDetails, edit
 
     },
     {
-        name: 'View',
+        name: 'Details',
         allowOverflow: true,
-        grow: 0,
+        grow: 1,
+        center: true,
         cell: (row, index, column, id) => {
             return (
                 <div className='d-flex'>
                                 <div   onClick={e =>  _handleViewDetails(row)} style={{ cursor: 'pointer' }}>
                                     <Eye size={15} />
-                                    <span className='align-middle ml-50'>{trans('gen.actions.view')}</span>
                                 </div>
                 </div>
             )
