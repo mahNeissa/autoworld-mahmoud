@@ -70,26 +70,24 @@ const BasicInfoModal = (props) => {
 
     if (attachment.toLowerCase().endsWith('.pdf')) {
       return (
-          <div style={{ width: '50%', height: '50%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+
             <img
                 src={pdfIcon} // Use the PDF icon
                 alt="PDF Attachment"
-                style={{ maxWidth: '80%', maxHeight: '80%', objectFit: 'cover', borderRadius: '20%', marginTop:'5%' }}
+                className="img-fluid"
                 onClick={() => openPdfViewer(attachment)}
             />
-          </div>
+
       )
     } else {
       return (
-          <div style={{ width: '50%', height: '50%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <PhotoView src={attachment}>
-              <img
-                  src={attachment}
-                  alt="Attachment"
-                  style={{ maxWidth: '80%', maxHeight: '80%', objectFit: 'cover', borderRadius: '20%', marginTop:'5%' }}
-              />
-            </PhotoView>
-          </div>
+      <PhotoView src={attachment}>
+        <img
+            src={attachment}
+            alt="Attachment"
+            className="img-fluid"
+        />
+      </PhotoView>
       )
     }
   }
@@ -334,7 +332,7 @@ const BasicInfoModal = (props) => {
                     {'Remarks'}
                   </Label>
                   <Controller
-                      as={<Input type="textarea" rows="2" />}
+                      as={<Input type="textarea" rows="4" />}
                       control={control}
                       id="remarks"
                       name="remarks"
@@ -346,47 +344,67 @@ const BasicInfoModal = (props) => {
                 </FormGroup>
               </Col>
               <Col md="6">
-                <div style={{padding: '0', width: '100%'}}>
-                  <div style={{display: 'flex', alignItems: 'center', marginBottom: '0%'}}>
+                <Row>
+                  <Col md="12">
                     <strong style={{marginRight: '2%'}}>Attachments</strong>
-                  </div>
-                  <Table bordered style={{ borderCollapse: 'collapse', border: 'none', borderSpacing: '0' }}>
-                    <tbody>
-                    <tr>
-                      <td style={{ border: 'none', padding: '0px', width: '16.66%' }}>
-                        <PhotoProvider>
-                          {renderAttachmentIcon(props.data.firstAttachment)}
-                        </PhotoProvider>
-                      </td>
-                      <td style={{ border: 'none',  padding: '0px', width: '16.66%' }}>
-                        <PhotoProvider>
-                          {renderAttachmentIcon(props.data.secondAttachment)}
-                        </PhotoProvider>
-                      </td>
-                      <td style={{ border: 'none',  padding: '0px', width: '16.66%' }}>
-                        <PhotoProvider>
-                          {renderAttachmentIcon(props.data.thirdAttachment)}
-                        </PhotoProvider>
-                      </td>
-                      <td style={{ border: 'none',  padding: '0px', width: '16.66%' }}>
-                        <PhotoProvider>
-                          {renderAttachmentIcon(props.data.fourthAttachment)}
-                        </PhotoProvider>
-                      </td>
-                      <td style={{ border: 'none',  padding: '0px', width: '16.66%' }}>
-                        <PhotoProvider>
-                          {renderAttachmentIcon(props.data.fifthAttachment)}
-                        </PhotoProvider>
-                      </td>
-                      <td style={{ border: 'none',  padding: '0px', width: '16.66%' }}>
-                        <PhotoProvider>
-                          {renderAttachmentIcon(props.data.sixthAttachment)}
-                        </PhotoProvider>
-                      </td>
-                    </tr>
-                    </tbody>
-                  </Table>
-                </div>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col md="2">
+                  <PhotoProvider>
+
+                    {renderAttachment(
+                        _.get(props, 'data.firstAttachment')
+                    )}
+                  </PhotoProvider>
+                  </Col>
+                  <Col md="2">
+                    <PhotoProvider>
+
+                      {renderAttachment(
+                          _.get(props, 'data.secondAttachment')
+                      )}
+                    </PhotoProvider>
+
+                  </Col>
+                  <Col md="2">
+                    <PhotoProvider>
+
+                      {renderAttachment(
+                          _.get(props, 'data.thirdAttachment')
+                      )}
+                    </PhotoProvider>
+
+                  </Col>
+                  <Col md="2">
+                    <PhotoProvider>
+
+                      {renderAttachment(
+                          _.get(props, 'data.fourthAttachment')
+                      )}
+                    </PhotoProvider>
+
+                  </Col>
+                  <Col md="2">
+                    <PhotoProvider>
+
+                      {renderAttachment(
+                          _.get(props, 'data.fifthAttachment')
+                      )}
+                    </PhotoProvider>
+
+                  </Col>
+                  <Col md="2">
+                    <PhotoProvider>
+
+                      {renderAttachment(
+                          _.get(props, 'data.sixthAttachment')
+                      )}
+                    </PhotoProvider>
+
+                  </Col>
+                </Row>
+
               </Col>
             </Row>
 
@@ -432,13 +450,13 @@ const BasicInfoModal = (props) => {
                     : 'N/A'}
               </td>
               <td>{
-                <div style={{marginTop: '0px'}}>
+
                   <PhotoProvider>
                     {renderAttachment(
                         _.get(props, 'data.orderSuppliers[0].replyAttachment')
                     )}
                   </PhotoProvider>
-                </div>
+
               }</td>
               <td style={{wordBreak: 'break-word'}}>{_.get(props, 'data.orderSuppliers[0].supplierNotes')}</td>
               {/* Added word-break and max-width */}
