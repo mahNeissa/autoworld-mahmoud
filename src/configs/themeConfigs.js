@@ -4,7 +4,7 @@ import {trans} from '@utils'
 
 const localConfigs = {
   app: {
-    appName: 'global.wattsan',
+    appName: 'Autoworld Trading',
     appLogoImage: require('@csrc/assets/images/logo/logo.png').default,
     images:{
       login:  require(`@csrc/assets/images/logo/logo-full.png`).default,

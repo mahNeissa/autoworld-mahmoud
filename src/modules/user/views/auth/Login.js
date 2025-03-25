@@ -94,87 +94,87 @@ const Login = props => {
   const {twoFactorModalShow, twoFactorModalData} = twoFactorModal
 
   return (
-    <div className='auth-wrapper auth-v2'>
-      <Row className='auth-inner m-0'>
-        <Link className='brand-logo' to='/' onClick={e => e.preventDefault()}>
+      <div className='auth-wrapper auth-v2'>
+        <Row className='auth-inner m-0'>
+          <Link className='brand-logo' to='/' onClick={e => e.preventDefault()}>
           <span className='login-logo'>
             <img src={themeConfig.app.appLogoImage} alt='logo' />
           </span>
-          <h2 className='brand-text text-primary ml-1'>{trans(themeConfig.app.appName)}</h2>
-        </Link>
-        <Col className='d-none d-lg-flex align-items-center p-5' lg='8' sm='12'>
-          <div className='w-100 d-lg-flex align-items-center justify-content-center px-5'>
-            {/*<img className='img-fluid' src={source} alt={trans('user.login')} />*/}
-            <img className='img-fluid' src={themeConfig.app.images.login} alt={trans('user.login')} />
-          </div>
-        </Col>
-        <Col className='d-flex align-items-center auth-bg px-2 p-lg-5' lg='4' sm='12'>
-          <Col className='px-xl-2 mx-auto' sm='8' md='6' lg='12'>
-            <CardTitle tag='h3' className='font-weight-bold mb-1'>
-              {trans('user.welcomeTo', {name: trans(themeConfig.app.appName)})}! 👋
-            </CardTitle>
-            <CardText className='mb-2'>
-              {trans('user.loginHelpText')}
-            </CardText>
-
-            <Form className='auth-login-form mt-2' onSubmit={handleSubmit(onSubmit)}>
-              <FormGroup>
-                <Label className='form-label' for='email'>
-                  {trans('user.email')}
-                </Label>
-                <Input
-                  autoFocus
-                  type='email'
-                  value={email}
-                  id='email'
-                  name='email'
-                  htmlFor={'email'}
-                  onChange={e => {
-                    setEmail(e.target.value)
-                    setValue('email', e.target.value)
-                  }}
-                  className={classnames({ 'is-invalid': errors['email'] })}
-                />
-              </FormGroup>
-              <FormGroup>
-                <Label className='form-label' for='login-password'>
-                  {trans('user.password')}
-                </Label>
-                <InputPasswordToggle
-                  value={password}
-                  id='login-password'
-                  name='login-password'
-                  onChange={e => {
-                    setPassword(e.target.value)
-                    setValue('login-password', e.target.value)
-                  }}
-                  className={classnames('input-group-merge', { 'is-invalid': errors['login-password'] })}
-                />
-              </FormGroup>
-              <FormGroup>
-                <div className='d-flex justify-content-between'>
-                  <CustomInput type='checkbox' className='custom-control-Primary' id='remember-me' label={trans('user.rememberMe')} onChange={e => setRememberMe(e.target.checked)}/>
-                  {/*<Link to='/forgot-password'>*/}
-                  {/*  <small>{trans('user.forgetPassword')}</small>*/}
-                  {/*</Link>*/}
-                </div>
-              </FormGroup>
-              <Button.Ripple type='submit' color='primary' block disabled={loading}>
-                { loading ? <ButtonSpinner/> : null}
-                <span>{trans('user.login')}</span>
-              </Button.Ripple>
-            </Form>
-            {/*<p className='text-center mt-2'>*/}
-            {/*  <span className='mr-25'>{trans('user.newOnPlatform')}</span>*/}
-            {/*  <Link to='/register'>*/}
-            {/*    <span>{trans('user.createAccount')}</span>*/}
-            {/*  </Link>*/}
-            {/*</p>*/}
+            <h2 className='brand-text text-primary ml-1'>{trans(themeConfig.app.appName)}</h2>
+          </Link>
+          <Col className='d-none d-lg-flex align-items-center p-5' lg='8' sm='12'>
+            <div className='w-100 d-lg-flex align-items-center justify-content-center px-5'>
+              {/*<img className='img-fluid' src={source} alt={trans('user.login')} />*/}
+              <img className='img-fluid' src={themeConfig.app.images.login} alt={trans('user.login')} />
+            </div>
           </Col>
-        </Col>
-      </Row>
-      {twoFactorModalShow && <TwoFactorModal email={email} successCallback={_loginSuccessCallback} data={twoFactorModalData} onClose={_closeTwoFactorModal}/>}
-    </div>
+          <Col className='d-flex align-items-center auth-bg px-2 p-lg-5' lg='4' sm='12'>
+            <Col className='px-xl-2 mx-auto' sm='8' md='6' lg='12'>
+              <CardTitle tag='h3' className='font-weight-bold mb-1'>
+                {trans('user.welcomeTo', {name: trans(themeConfig.app.appName)})}! 👋
+              </CardTitle>
+              <CardText className='mb-2'>
+                {trans('user.loginHelpText')}
+              </CardText>
+
+              <Form className='auth-login-form mt-2' onSubmit={handleSubmit(onSubmit)}>
+                <FormGroup>
+                  <Label className='form-label' for='email'>
+                    {trans('user.email')}
+                  </Label>
+                  <Input
+                      autoFocus
+                      type='email'
+                      value={email}
+                      id='email'
+                      name='email'
+                      htmlFor={'email'}
+                      onChange={e => {
+                        setEmail(e.target.value)
+                        setValue('email', e.target.value)
+                      }}
+                      className={classnames({ 'is-invalid': errors['email'] })}
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <Label className='form-label' for='login-password'>
+                    {trans('user.password')}
+                  </Label>
+                  <InputPasswordToggle
+                      value={password}
+                      id='login-password'
+                      name='login-password'
+                      onChange={e => {
+                        setPassword(e.target.value)
+                        setValue('login-password', e.target.value)
+                      }}
+                      className={classnames('input-group-merge', { 'is-invalid': errors['login-password'] })}
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <div className='d-flex justify-content-between'>
+                    <CustomInput type='checkbox' className='custom-control-Primary' id='remember-me' label={trans('user.rememberMe')} onChange={e => setRememberMe(e.target.checked)}/>
+                    {/*<Link to='/forgot-password'>*/}
+                    {/*  <small>{trans('user.forgetPassword')}</small>*/}
+                    {/*</Link>*/}
+                  </div>
+                </FormGroup>
+                <Button.Ripple type='submit' color='dark' block disabled={loading}>
+                  { loading ? <ButtonSpinner/> : null}
+                  <span>{trans('user.login')}</span>
+                </Button.Ripple>
+              </Form>
+              {/*<p className='text-center mt-2'>*/}
+              {/*  <span className='mr-25'>{trans('user.newOnPlatform')}</span>*/}
+              {/*  <Link to='/register'>*/}
+              {/*    <span>{trans('user.createAccount')}</span>*/}
+              {/*  </Link>*/}
+              {/*</p>*/}
+            </Col>
+          </Col>
+        </Row>
+        {twoFactorModalShow && <TwoFactorModal email={email} successCallback={_loginSuccessCallback} data={twoFactorModalData} onClose={_closeTwoFactorModal}/>}
+      </div>
   )
 }
 

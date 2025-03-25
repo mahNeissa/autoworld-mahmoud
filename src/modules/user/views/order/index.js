@@ -27,6 +27,8 @@ import CanCall from '../../components/CanCall'
 import BasicInfoModal from './BasicInfoModal'
 import {OrderStatus, trueFaulse} from './order-status'
 import {redColor} from "../../../../assets/data/colors/palette"
+import StatusStepper from "../../../../components/StatusStepper"
+import {useState} from "."
 // import DetailsModal from "../details-modal"
 //************************************//
 
@@ -191,7 +193,12 @@ class BrandList extends Component {
         const {detailsModalShow, detailsModalData} = this.state.detailsModal
         const hasAction = _hasAnyAbility(this.context, tableActions)
         return (
+
+
             <Fragment>
+
+                <StatusStepper/>
+
                 <Breadcrumbs breadCrumbMainTitle={''} breadCrumbTitle={<h1 className={'Brands'}> Orders </h1>} breadCrumbParent='' breadCrumbActive='' >
                     <Button.Ripple className='btn-icon' color='primary' onClick={this.openBasicInfoModal}>
                         <Plus size={14} />
