@@ -25,8 +25,8 @@ export const Routes = [
     }
   },
   {
-    path: "/homepage",
-    component: lazy(() => import("../views/homePage")),
+    path: "/purchaseOrders/index",
+    component: lazy(() => import("../views/purchaseOrders")),
     meta: {
       publicRoute:true
     }

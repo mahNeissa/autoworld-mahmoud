@@ -1,0 +1,254 @@
+import React, { Fragment, Component, memo } from 'react'
+import { connect } from 'react-redux'
+import '../../app.css'
+import {CheckboxBasic, UnCheckboxBasic} from '../forms/CheckboxBasic'
+import {FileText, MoreVertical, Send, Plus, Key, User, Eye, Trash} from 'react-feather'
+
+import {
+    Row,
+    Col,
+    Button,
+    UncontrolledDropdown,
+    DropdownToggle,
+    DropdownMenu,
+    DropdownItem, Badge
+} from 'reactstrap'
+import { Link } from 'react-router-dom'
+//************************************//
+import Breadcrumbs from '@src/components/breadcrumbs'
+import DataTable, {ActionDropdownToggle} from '@src/components/datatable'
+import {trans, _confirm, _url, env} from '@utils'
+import {AbilityContext, _hasAnyAbility } from '@src/utility/context/Can'
+import Avatar from '@components/avatar'
+import {_getDatatable} from "@csrc/utility/Utils"
+//************************************//
+import {_activateTeamMember, _deactivateTeamMember, _deleteResponsible} from '../../redux/actions'
+import CanCall from '../../components/CanCall'
+import BasicInfoModal from './BasicInfoModal'
+import {OrderStatus, trueFaulse} from './order-status'
+import {redColor} from "../../../../assets/data/colors/palette"
+import StatusStepper from "../../../../components/StatusStepper"
+import {useState} from "."
+// import DetailsModal from "../details-modal"
+//************************************//
+
+const tableColumns = (state, view, _editBasicInfoModal, _handleViewDetails, edit, hasAction) => [
+    {
+        name: 'Serial',
+        selector: 'purchaseOrder.serial',
+        sortable: true,
+        grow: 1,
+        // minWidth: '225px',
+        filter: {
+            enabled: true
+        }
+    },
+    {
+        name: 'Name',
+        selector: 'purchaseOrder.user.name',
+        sortable: true,
+        grow: 1,
+        // minWidth: '225px',
+        filter: {
+            enabled: true
+        }
+    },
+    {
+        name: 'Mobile',
+        selector: 'purchaseOrder.user.mobile',
+        sortable: true,
+        grow: 1,
+        // minWidth: '225px',
+        filter: {
+            enabled: true
+        }
+    },
+    {
+        name: 'Insert Date',
+        selector: 'purchaseOrder.insertDate',
+        sortable: true,
+        grow: 1,
+        // minWidth: '225px',
+        filter: {
+            enabled: true
+        },
+        cell: row => {
+            return row.purchaseOrder.insertDate
+                ? (() => {
+                    const date = new Date(row.purchaseOrder.insertDate) //
+                    const year = date.getFullYear()
+                    const month = String(date.getMonth() + 1).padStart(2, '0')
+                    const day = String(date.getDate()).padStart(2, '0')
+                    const hours = String(date.getHours()).padStart(2, '0')
+                    const minutes = String(date.getMinutes()).padStart(2, '0')
+                    return `${year}-${month}-${day} ${hours}:${minutes}`
+                })()
+                : 'N/A'
+        }
+    },
+    {
+        name: 'Product Name',
+        selector: 'productDetails.products.name',
+        sortable: true,
+        grow: 1,
+        // minWidth: '225px',
+        filter: {
+            enabled: true
+        }
+    },
+    {
+        name: 'Price',
+        selector: 'productDetails.price',
+        sortable: true,
+        grow: 1,
+        // minWidth: '225px',
+        filter: {
+            enabled: true
+        }
+    },
+    {
+        name: 'Status',
+        selector: 'status',
+        sortable: true,
+        grow: 1,
+        center: true,
+        // minWidth: '225px',
+        filter: {
+            enabled: true
+        },
+        cell: row => {
+            const orderstatus = row.status
+            return <span> {OrderStatus[orderstatus].value} </span> // Added title
+        }
+    },
+    {
+        name: 'Details',
+        allowOverflow: true,
+        grow: 1,
+        center: true,
+        cell: (row, index, column, id) => {
+            return (
+                <div className='d-flex'>
+                                <div   onClick={e =>  _handleViewDetails(row)} style={{ cursor: 'pointer' }}>
+                                    <Eye size={15} />
+                                </div>
+                </div>
+            )
+        }
+    }
+
+]
+const tableActions = ['NoPermissionCode']
+//************************************//
+class PurchaseOrderList extends Component {
+    static contextType = AbilityContext
+    constructor(props) {
+        super(props)
+        this._handleViewDetails = this._handleViewDetails.bind(this)
+        this.state = {
+            //userId: props.userId,
+            basicInfoModal: { basicInfoModalShow: false, basicInfoModalData: {}, viewOnly: false }, // Added viewOnly: false
+            detailsModal: {detailsModalShow: false, detailsModalData: {}}
+
+        }
+    }
+    //************************************//
+    closeBasicInfoModal = () => {
+        this.setState({basicInfoModal: {basicInfoModalShow: false, basicInfoModalData: {}, viewOnly: false}})
+    }
+    //************************************//
+    openBasicInfoModal = () => {
+        this.setState({basicInfoModal: {basicInfoModalShow: true, basicInfoModalData: {}, viewOnly: false}})
+    }
+    //************************************//
+    editBasicInfoModal = (data) => {
+        this.setState({basicInfoModal: {basicInfoModalShow: true, basicInfoModalData: data, viewOnly: false}})
+    }
+    //************************************//
+    _editBasicInfoModal = (data) => {
+        this.setState({ basicInfoModal: { basicInfoModalShow: true, basicInfoModalData: data, viewOnly: false } }, () => {
+        })
+    }
+    //************************************//
+    _handleViewDetails = (data) => {
+        console.log("_handleViewDetails called") // Add this line
+        this.setState({ basicInfoModal: { basicInfoModalShow: true, basicInfoModalData: data, viewOnly: true } }, () => {
+        console.log("BasicInfoModal State:", this.state.basicInfoModal) // Add this line
+
+        })
+    }
+    //************************************//
+    closeDetailsModal = () => {
+        this.setState({detailsModal: {detailsModalShow: false, detailsModalData: {}}})
+    }
+    //************************************//
+    openDetailsModal = (categoryId) => {
+        this.setState({detailsModal: {detailsModalShow: false, detailsModalData: {categoryId}}})
+    }
+    //************************************//
+    deleteUser = (id) => {
+        _confirm({
+            callback: (c) => {
+                _deleteResponsible(id, () => {
+                    this.dataTableRef._refresh()
+                    c()
+                })
+            }
+        })
+    }
+    //************************************//
+    render () {
+        const {  basicInfoModal, selectedRowData } = this.state
+        console.log("basicInfoModal.viewOnly in render:", basicInfoModal.viewOnly) // Add this line
+
+        const {detailsModalShow, detailsModalData} = this.state.detailsModal
+        const hasAction = _hasAnyAbility(this.context, tableActions)
+        return (
+
+
+            <Fragment>
+
+
+                <Breadcrumbs breadCrumbMainTitle={''} breadCrumbTitle={<h1 className={'Brands'}> Purchase Orders </h1>} breadCrumbParent='' breadCrumbActive='' >
+                    <Button.Ripple className='btn-icon' color='primary' onClick={this.openBasicInfoModal}>
+                        <Plus size={14} />
+                        <span className='ml-25'>{trans('gen.actions.add')}</span>
+                    </Button.Ripple>
+
+                </Breadcrumbs>
+                <Row>
+                    <Col sm='12'>
+                        <DataTable
+                            //ref={(ref) => { this.dataTableRef = ref }}
+                            _fetchData={(params, callback) => _getDatatable('PurchaseOrders/PurchaseOrders_Read', {...params, filter: {...params.filter}}, callback)}
+                            columns={tableColumns(this.state, this.openDetailsModal, this._handleViewDetails, this._editBasicInfoModal, this.editBasicInfoModal, hasAction)}
+                            hasIndexing={false}
+                            hasFilter={false}
+                        />
+                    </Col>
+                </Row>
+                {/*{detailsModalShow && <DetailsModal successCallback={() => {}} data={detailsModalData} onClose={this.closeDetailsModal}/>}*/}
+                {/*{basicInfoModalShow && <BasicInfoModal successCallback={this.dataTableRef._refresh} data={basicInfoModalData} onClose={this.closeBasicInfoModal}/>}*/}
+                {basicInfoModal.basicInfoModalShow && (
+                    console.log("Passing viewOnly to modal:", basicInfoModal.viewOnly),
+                    <BasicInfoModal
+                        key={basicInfoModal.basicInfoModalData?.id} //add the key prop here
+                        isOpen={basicInfoModal.basicInfoModalShow}
+                        successCallback={() => this.dataTableRef._refresh()}
+                        data={basicInfoModal.basicInfoModalData}
+                        onClose={this.closeBasicInfoModal}
+                        viewOnly = {basicInfoModal.viewOnly} //ensure that you are passing the view only prop.
+                        // className="full-width-card"
+                    />
+                )}
+            </Fragment>
+        )
+    }
+}
+//************************************//
+const mapStateToProps = store => ({
+    loading: store.app.loading
+    //userId: _.get(store, `${env('REACT_APP_AUTH_MODULE')}.userData.id`)
+})
+export default connect(mapStateToProps, null, null, { forwardRef: true })(PurchaseOrderList)
+

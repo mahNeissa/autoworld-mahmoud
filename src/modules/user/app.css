@@ -4,6 +4,7 @@
     font-style: italic;
     font-weight: bold;
     text-align: center;
+    color: blue;
 
 }
 .trash_className{
@@ -22,4 +23,17 @@
     font-weight: bold;
     font-size: 15px;
 
+}
+.modal-dialog {
+    max-width: none !important; /* Override max-width */
+    width: 100% !important; /* Force width to 100% */
+    margin: 0 !important; /* remove default margin */
+}
+
+.modal-content {
+    width: 100% !important; /* Force modal content to 100% width */
+}
+.modal-slide-in.sidebar-todo-modal .modal-content {
+    width: 100% !important;
+    max-width: none !important;
 }
