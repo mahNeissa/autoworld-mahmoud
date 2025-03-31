@@ -1,37 +1,30 @@
 import React, { Fragment, Component, memo } from 'react'
 import { connect } from 'react-redux'
 import '../../app.css'
-import {CheckboxBasic, UnCheckboxBasic} from '../forms/CheckboxBasic'
-import {FileText, MoreVertical, Send, Plus, Key, User, Eye, Trash} from 'react-feather'
+import { Eye} from 'react-feather'
 
 import {
     Row,
-    Col,
-    Button,
-    UncontrolledDropdown,
-    DropdownToggle,
-    DropdownMenu,
-    DropdownItem, Badge
-} from 'reactstrap'
+    Col
+  } from 'reactstrap'
 import { Link } from 'react-router-dom'
 //************************************//
 import Breadcrumbs from '@src/components/breadcrumbs'
-import DataTable, {ActionDropdownToggle} from '@src/components/datatable'
-import {trans, _confirm, _url, env} from '@utils'
-import {AbilityContext, _hasAnyAbility } from '@src/utility/context/Can'
-import Avatar from '@components/avatar'
+import DataTable from '@src/components/datatable'
+import {trans, _confirm} from '@utils'
+import {AbilityContext } from '@src/utility/context/Can'
 import {_getDatatable} from "@csrc/utility/Utils"
 //************************************//
-import {_activateTeamMember, _deactivateTeamMember, _deleteResponsible} from '../../redux/actions'
-import CanCall from '../../components/CanCall'
+import { _deleteResponsible} from '../../redux/actions'
 import BasicInfoModal from './BasicInfoModal'
-import {OrderStatus, trueFaulse} from './order-status'
-import {redColor} from "../../../../assets/data/colors/palette"
-import StatusStepper from "../../../../components/StatusStepper"
+import {OrderStatus} from './order-status'
 import {useState} from "."
-// import DetailsModal from "../details-modal"
 //************************************//
-
+// Function to group data by purchaseOrder.id
+const groupDataByPurchaseOrderId = (data) => {
+    // MARK: Creating the groupDataByPurchaseOrderId function
+    return _.groupBy(data, 'purchaseOrder.id')
+}
 const tableColumns = (state, view, _editBasicInfoModal, _handleViewDetails, edit, hasAction) => [
     {
         name: 'Serial',
@@ -87,26 +80,6 @@ const tableColumns = (state, view, _editBasicInfoModal, _handleViewDetails, edit
         }
     },
     {
-        name: 'Product Name',
-        selector: 'productDetails.products.name',
-        sortable: true,
-        grow: 1,
-        // minWidth: '225px',
-        filter: {
-            enabled: true
-        }
-    },
-    {
-        name: 'Price',
-        selector: 'productDetails.price',
-        sortable: true,
-        grow: 1,
-        // minWidth: '225px',
-        filter: {
-            enabled: true
-        }
-    },
-    {
         name: 'Status',
         selector: 'status',
         sortable: true,
@@ -129,9 +102,12 @@ const tableColumns = (state, view, _editBasicInfoModal, _handleViewDetails, edit
         cell: (row, index, column, id) => {
             return (
                 <div className='d-flex'>
-                                <div   onClick={e =>  _handleViewDetails(row)} style={{ cursor: 'pointer' }}>
-                                    <Eye size={15} />
-                                </div>
+                    <div onClick={(e) => {
+                        console.log('View button clicked!')
+                        _handleViewDetails(row)
+                    }} style={{ cursor: 'pointer' }}>
+                        <Eye size={15} />
+                    </div>
                 </div>
             )
         }
@@ -170,13 +146,33 @@ class PurchaseOrderList extends Component {
         })
     }
     //************************************//
+    // _handleViewDetails = (data) => {
+    //     console.log("_handleViewDetails called") // Add this line
+    //     this.setState({ basicInfoModal: { basicInfoModalShow: true, basicInfoModalData: data, viewOnly: true } }, () => {
+    //     console.log("BasicInfoModal State:", this.state.basicInfoModal) // Add this line
+    //
+    //     })
+    // }
     _handleViewDetails = (data) => {
-        console.log("_handleViewDetails called") // Add this line
-        this.setState({ basicInfoModal: { basicInfoModalShow: true, basicInfoModalData: data, viewOnly: true } }, () => {
-        console.log("BasicInfoModal State:", this.state.basicInfoModal) // Add this line
-
+        _getDatatable("PurchaseOrders/PurchaseOrders_Read", { filter: { "purchaseOrder.id": data.purchaseOrder.id } }, (result) => {
+            console.log('API Result:', result)
+            if (result && result.list) { // Change to check for result.list
+                console.log('API Result List:', result.list)// added console log
+                const groupedData = groupDataByPurchaseOrderId(result.list) // Change to use result.list
+                console.log('Grouped Data:', groupedData[data.purchaseOrder.id])
+                this.setState({
+                    basicInfoModal: {
+                        basicInfoModalShow: true,
+                        basicInfoModalData: groupedData[data.purchaseOrder.id],
+                        viewOnly: true
+                    }
+                })
+            } else {
+                console.error("Error fetching purchase order details.", result)
+            }
         })
     }
+
     //************************************//
     closeDetailsModal = () => {
         this.setState({detailsModal: {detailsModalShow: false, detailsModalData: {}}})
@@ -197,48 +193,44 @@ class PurchaseOrderList extends Component {
         })
     }
     //************************************//
-    render () {
-        const {  basicInfoModal, selectedRowData } = this.state
-        console.log("basicInfoModal.viewOnly in render:", basicInfoModal.viewOnly) // Add this line
-
-        const {detailsModalShow, detailsModalData} = this.state.detailsModal
-        const hasAction = _hasAnyAbility(this.context, tableActions)
+    render() {
+        const { basicInfoModal } = this.state
         return (
-
-
             <Fragment>
-
-
-                <Breadcrumbs breadCrumbMainTitle={''} breadCrumbTitle={<h1 className={'Brands'}> Purchase Orders </h1>} breadCrumbParent='' breadCrumbActive='' >
-                    <Button.Ripple className='btn-icon' color='primary' onClick={this.openBasicInfoModal}>
-                        <Plus size={14} />
-                        <span className='ml-25'>{trans('gen.actions.add')}</span>
-                    </Button.Ripple>
-
-                </Breadcrumbs>
+                <Breadcrumbs breadCrumbMainTitle={''} breadCrumbTitle={<h1 className={'Brands'}> Purchase Orders </h1>} />
                 <Row>
                     <Col sm='12'>
                         <DataTable
-                            //ref={(ref) => { this.dataTableRef = ref }}
-                            _fetchData={(params, callback) => _getDatatable('PurchaseOrders/PurchaseOrders_Read', {...params, filter: {...params.filter}}, callback)}
-                            columns={tableColumns(this.state, this.openDetailsModal, this._handleViewDetails, this._editBasicInfoModal, this.editBasicInfoModal, hasAction)}
+                            _fetchData={(params, callback) => {
+                                _getDatatable('PurchaseOrders/PurchaseOrders_Read', { ...params, filter: { ...params.filter } }, (result) => {
+                                    if (result && result.list) {
+                                        const uniqueIds = new Set()
+                                        const uniqueData = result.list.filter((row) => {
+                                            if (uniqueIds.has(row.purchaseOrder.id)) {
+                                                return false // Skip duplicate
+                                            }
+                                            uniqueIds.add(row.purchaseOrder.id)
+                                            return true // Add unique row
+                                        })
+                                        callback({ ...result, list: uniqueData })
+                                    } else {
+                                        callback(result)
+                                    }
+                                })
+                            }}
+                            columns={tableColumns(this.state, null, null, this._handleViewDetails)}
                             hasIndexing={false}
                             hasFilter={false}
                         />
                     </Col>
                 </Row>
-                {/*{detailsModalShow && <DetailsModal successCallback={() => {}} data={detailsModalData} onClose={this.closeDetailsModal}/>}*/}
-                {/*{basicInfoModalShow && <BasicInfoModal successCallback={this.dataTableRef._refresh} data={basicInfoModalData} onClose={this.closeBasicInfoModal}/>}*/}
                 {basicInfoModal.basicInfoModalShow && (
-                    console.log("Passing viewOnly to modal:", basicInfoModal.viewOnly),
                     <BasicInfoModal
-                        key={basicInfoModal.basicInfoModalData?.id} //add the key prop here
                         isOpen={basicInfoModal.basicInfoModalShow}
-                        successCallback={() => this.dataTableRef._refresh()}
+                        // MARK: Passing the grouped data (parent and childs) to BasicInfoModal
                         data={basicInfoModal.basicInfoModalData}
                         onClose={this.closeBasicInfoModal}
-                        viewOnly = {basicInfoModal.viewOnly} //ensure that you are passing the view only prop.
-                        // className="full-width-card"
+                        viewOnly={basicInfoModal.viewOnly}
                     />
                 )}
             </Fragment>
