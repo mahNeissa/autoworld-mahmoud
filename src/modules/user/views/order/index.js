@@ -1,38 +1,21 @@
 import React, { Fragment, Component, memo } from 'react'
 import { connect } from 'react-redux'
 import '../../app.css'
-import {CheckboxBasic, UnCheckboxBasic} from '../forms/CheckboxBasic'
-import {FileText, MoreVertical, Send, Plus, Key, User, Eye, Trash} from 'react-feather'
-
-import {
-    Row,
-    Col,
-    Button,
-    UncontrolledDropdown,
-    DropdownToggle,
-    DropdownMenu,
-    DropdownItem, Badge
-} from 'reactstrap'
-import { Link } from 'react-router-dom'
-//************************************//
+import {Plus, Eye, Edit, Trash} from 'react-feather'
+import {Row, Col, Button, UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem} from 'reactstrap'
 import Breadcrumbs from '@src/components/breadcrumbs'
 import DataTable, {ActionDropdownToggle} from '@src/components/datatable'
-import {trans, _confirm, _url, env} from '@utils'
+import {trans, _confirm} from '@utils'
 import {AbilityContext, _hasAnyAbility } from '@src/utility/context/Can'
-import Avatar from '@components/avatar'
 import {_getDatatable} from "@csrc/utility/Utils"
-//************************************//
-import {_activateTeamMember, _deactivateTeamMember, _deleteResponsible} from '../../redux/actions'
-import CanCall from '../../components/CanCall'
 import BasicInfoModal from './BasicInfoModal'
-import {OrderStatus, trueFaulse} from './order-status'
-import {redColor} from "../../../../assets/data/colors/palette"
-import StatusStepper from "../../../../components/StatusStepper"
+import {OrderStatus} from './order-status'
 import {useState} from "."
-// import DetailsModal from "../details-modal"
+import PopupAlert from './modification-state' // MODIFICATION: Import the PopupAlert component
+
 //************************************//
 
-const tableColumns = (state, view, _editBasicInfoModal, _handleViewDetails, edit, hasAction) => [
+const tableColumns = (state, view, _editBasicInfoModal, _handleViewDetails, edit, hasAction, handleModifyState) => [
     {
         name: 'Serial',
         selector: 'serial',
@@ -53,16 +36,6 @@ const tableColumns = (state, view, _editBasicInfoModal, _handleViewDetails, edit
             enabled: true
         }
     },
-    // {
-    //     name: 'Category',
-    //     selector: 'categoryId',
-    //     sortable: true,
-    //     grow: 1,
-    //     // minWidth: '225px',
-    //     filter: {
-    //         enabled: true
-    //     }
-    // },
     {
         name: 'Insert Date',
         selector: 'insertDate',
@@ -147,26 +120,70 @@ const tableColumns = (state, view, _editBasicInfoModal, _handleViewDetails, edit
                 : 'N/A'
         }
     },
+    // {
+    //     name: 'Details',
+    //     allowOverflow: true,
+    //     grow: 1,
+    //     center: true,
+    //     cell: (row, index, column, id) => {
+    //         return (
+    //             <div className='d-flex'>
+    //                             <div   onClick={e =>  _handleViewDetails(row)} style={{ cursor: 'pointer' }}>
+    //                                 <Eye size={15} />
+    //                             </div>
+    //             </div>
+    //         )
+    //     }
+    // },
     {
-        name: 'Details',
+        name: 'Modify',
         allowOverflow: true,
-        grow: 1,
-        center: true,
+        grow: 0,
         cell: (row, index, column, id) => {
             return (
                 <div className='d-flex'>
-                                <div   onClick={e =>  _handleViewDetails(row)} style={{ cursor: 'pointer' }}>
-                                    <Eye size={15} />
-                                </div>
+                    <UncontrolledDropdown>
+                        <ActionDropdownToggle />
+                        <DropdownMenu right>
+                            <DropdownItem  className='w-100'   onClick={() => _handleViewDetails(row)} style={{ cursor: 'pointer' }}>
+                                <Eye size={20} weight="bold"/>
+                                {/*<span className='align-middle ml-50'>{trans('gen.actions.view')}</span>*/}
+                            </DropdownItem>
+                            <DropdownItem className='ThreePoints' onClick={e => { handleModifyState(row) }} style={{ cursor: 'pointer' }}>
+                                <Edit size={20} weight="bold"/>
+                                {/*<span className='edit_className'>edit</span>*/}
+                            </DropdownItem>
+                            <DropdownItem className='ThreePoints' onClick={e => _deleteUser(row.id)} disabled={row.id === state.userId || row.id === 1}>
+                                <Trash size={20} weight="bold"/>
+                                {/*<span className='trash_className'>Delete</span>*/}
+                            </DropdownItem>
+                        </DropdownMenu>
+                    </UncontrolledDropdown>
                 </div>
             )
         }
     }
 
+    // {
+    //     name: 'Modify State',
+    //     allowOverflow: true,
+    //     grow: 1,
+    //     center: true,
+    //     cell: (row, index, column, id) => {
+    //         return (
+    //             <div className='d-flex'>
+    //                 <div   onClick={e =>  handleModifyState(row)} style={{ cursor: 'pointer' }}>
+    //                     <Edit size={15} />
+    //                 </div>
+    //             </div>
+    //         )
+    //     }
+    // }
+
 ]
 const tableActions = ['NoPermissionCode']
 //************************************//
-class BrandList extends Component {
+class OrderList extends Component {
     static contextType = AbilityContext
     constructor(props) {
         super(props)
@@ -174,8 +191,9 @@ class BrandList extends Component {
         this.state = {
             //userId: props.userId,
             basicInfoModal: { basicInfoModalShow: false, basicInfoModalData: {}, viewOnly: false }, // Added viewOnly: false
-            detailsModal: {detailsModalShow: false, detailsModalData: {}}
-
+            detailsModal: {detailsModalShow: false, detailsModalData: {}},
+            showAlert: false, // MODIFICATION: Add showAlert state
+            alertRowData: null // MODIFICATION: Add alertRowData state
         }
     }
     //************************************//
@@ -204,37 +222,30 @@ class BrandList extends Component {
         })
     }
     //************************************//
-    closeDetailsModal = () => {
-        this.setState({detailsModal: {detailsModalShow: false, detailsModalData: {}}})
-    }
-    //************************************//
     openDetailsModal = (categoryId) => {
         this.setState({detailsModal: {detailsModalShow: false, detailsModalData: {categoryId}}})
     }
     //************************************//
-    deleteUser = (id) => {
-        _confirm({
-            callback: (c) => {
-                _deleteResponsible(id, () => {
-                    this.dataTableRef._refresh()
-                    c()
-                })
-            }
-        })
+    handleModifyState = (rowData) => { // MODIFICATION: Add handleModifyState function
+        this.setState({ showAlert: true, alertRowData: rowData })
     }
-    //************************************//
-    render () {
-        const {  basicInfoModal, selectedRowData } = this.state
-        console.log("basicInfoModal.viewOnly in render:", basicInfoModal.viewOnly) // Add this line
 
-        const {detailsModalShow, detailsModalData} = this.state.detailsModal
+    handleYes = () => { // MODIFICATION: Add handleYes function
+        console.log('Yes clicked for:', this.state.alertRowData)
+        this.setState({ showAlert: false, alertRowData: null })
+        // Add your "yes" logic here, using the rowData from this.state.alertRowData
+    }
+
+    handleNo = () => { // MODIFICATION: Add handleNo function
+        console.log('No clicked')
+        this.setState({ showAlert: false, alertRowData: null })
+    }
+    render () {
+        const {  basicInfoModal, showAlert, alertRowData } = this.state
+        // console.log("basicInfoModal.viewOnly in render:", basicInfoModal.viewOnly) // Add this line
         const hasAction = _hasAnyAbility(this.context, tableActions)
         return (
-
-
             <Fragment>
-
-
                 <Breadcrumbs breadCrumbMainTitle={''} breadCrumbTitle={<h1 className={'Brands'}> Orders </h1>} breadCrumbParent='' breadCrumbActive='' >
                     <Button.Ripple className='btn-icon' color='primary' onClick={this.openBasicInfoModal}>
                         <Plus size={14} />
@@ -247,7 +258,7 @@ class BrandList extends Component {
                         <DataTable
                             //ref={(ref) => { this.dataTableRef = ref }}
                             _fetchData={(params, callback) => _getDatatable('Orders/Orders_Read', {...params, filter: {...params.filter}}, callback)}
-                            columns={tableColumns(this.state, this.openDetailsModal, this._handleViewDetails, this._editBasicInfoModal, this.editBasicInfoModal, hasAction)}
+                            columns={tableColumns(this.state, this.openDetailsModal, this._handleViewDetails, this._editBasicInfoModal, this.editBasicInfoModal, hasAction, this.handleModifyState)}
                             hasIndexing={false}
                             hasFilter={false}
                         />
@@ -267,6 +278,13 @@ class BrandList extends Component {
 
                     />
                 )}
+                {showAlert && ( // MODIFICATION: Render PopupAlert conditionally
+                    <PopupAlert
+                        message="Are you sure you want to modify the state?"
+                        onYes={this.handleYes} // MODIFICATION: Pass handleYes
+                        onNo={this.handleNo} // MODIFICATION: Pass handleNo
+                    />
+                )}
             </Fragment>
         )
     }
@@ -276,4 +294,4 @@ const mapStateToProps = store => ({
     loading: store.app.loading
     //userId: _.get(store, `${env('REACT_APP_AUTH_MODULE')}.userData.id`)
 })
-export default connect(mapStateToProps, null, null, { forwardRef: true })(BrandList)
+export default connect(mapStateToProps, null, null, { forwardRef: true })(OrderList)
